@@ -7,6 +7,20 @@ private:
    string num1;
    int size();
    int sign();
+   string nineComplement(string s, int LoopLength){
+        string result = "";
+        int diff = LoopLength - s.size();
+        for (int i = LoopLength - 1; i >= 0; i--){
+            if (i >= diff){
+                result += char(9 - (s[i - diff] - '0') + '0');
+            }
+            else {
+                result += char(9 + '0');
+            }
+        }
+        reverse(result.begin(), result.end());
+        return result;
+    }
 public:
    BigDecimalInt (string firstnum)
    {
@@ -29,8 +43,119 @@ public:
 //            }
 //        }
 //    }
+   
+       BigDecimalInt operator-(BigDecimalInt s2){
+        BigDecimalInt result;
+        BigDecimalInt help(decStr);
+        int loopLength;
+        int len1 = decStr.length();
+        int len2 = s2.decStr.length();
+        //int num1, num2;
+//        if (len1 < 9 && len2 < 9){
+//            num1 = int(decStr);
+//            decInt = num1;
+//            //decInt = stoi(decStr);
+//            num2 = int(s2.decStr);
+//            s2.decInt = num2;
+//            //s2.decInt = stoi (s2.decStr);
+//            result.decInt = decInt - s2.decInt;
+//        }
+        //else {
+        if (s2.decStr[0] == '-') {
+            s2.decStr.erase(0, 1);
+            len2 -= 1;
+            //s2.decStr[0] = '0';
+            if (decStr[0] == '-') { // - (-num) = + num
+                decStr.erase(0, 1);
+                len1 -= 1;
+                //decStr[0] = '0';
+                if (len1 >= len2) {
+                    loopLength = len1;
+                }
+                else{
+                    loopLength = len2;
+                }
+                help.decStr = nineComplement(decStr, loopLength);
+                //result.decStr = s2.decStr + decStr;
+                result = s2 + help;
 
-
+                if (result.decStr.length() > loopLength){ // There is a Carry
+                    string carry = "";
+                    carry.push_back(result.decStr[0]);
+                    BigDecimalInt carr (carry);
+                    result.decStr.erase(0, 1); // Removes the Carry From the result
+                    //result.decStr = result.decStr + carry;
+                    result = result + carr;
+                }
+                else if (result.decStr.length() == loopLength){
+                    result.decStr = nineComplement(result.decStr, loopLength);
+                    reverse(result.decStr.begin(), result.decStr.end());
+                    result.decStr.push_back('-');
+                    reverse(result.decStr.begin(), result.decStr.end());
+                }
+            }
+            else if (decStr[0] == '+'){
+                decStr.erase(0, 1);
+                result = help + s2;
+                //result.decStr = decStr + s2.decStr;
+            }
+            else if (isdigit(decStr[0])){
+                //BigDecimalInt help(decStr);
+                result = help + s2;
+                //result.decStr = decStr + s2.decStr;
+            }
+        }
+        else if (s2.decStr[0] == '+' || isdigit(s2.decStr[0])){
+            if (s2.decStr[0] == '+'){
+                s2.decStr.erase(0, 1);
+                len2 -= 1;
+            }
+            if (decStr[0] == '-'){
+                decStr.erase(0, 1);
+                result = help + s2; // The two numbers has the same sign (-ve)
+                result.decStr = decStr + s2.decStr;
+                reverse(result.decStr.begin(), result.decStr.end());
+                result.decStr.push_back('-');
+                reverse(result.decStr.begin(), result.decStr.end());
+            }
+            else if(decStr[0] == '+' || isdigit(decStr[0])){
+                if (decStr[0] == '+'){
+                 decStr.erase(0, 1);
+                 len1 -= 1;
+                }
+                if (len1 >= len2){
+                    loopLength = len1;
+                }
+                else{
+                    loopLength = len2;
+                }
+                s2.decStr = nineComplement(s2.decStr, loopLength);
+                //result.decStr = decStr + s2.decStr;
+                result = help + s2;
+                if (result.decStr.length() > loopLength){ // There is a Carry, the result is positive
+                    //char carry = result.decStr[0];
+                    string carry = "";
+                    carry.push_back(result.decStr[0]);
+                    BigDecimalInt carr (carry);
+                    result.decStr.erase(0, 1); // Removes the Carry From the result
+                    //result.decStr = result.decStr + carry;
+                    //cout << "before: " << result.decStr << endl;
+                    result = result + carr;
+                    //cout << "After : " << result.decStr << endl;
+                }
+                else if (result.decStr.length() == loopLength){ //There is no carry, the result is negative
+                    result.decStr = nineComplement(result.decStr, loopLength);
+                    reverse(result.decStr.begin(), result.decStr.end());
+                    result.decStr.push_back('-');
+                    reverse(result.decStr.begin(), result.decStr.end());
+                }
+            }
+        }
+        //}
+        //cout << "decInt= " << result.decInt << endl;
+        cout << "decStr= " << result.decStr << endl;
+        return result;
+    }
 
    bool operator< (BigDecimalInt anotherDec)
    {
@@ -210,6 +335,8 @@ ostream& operator << (ostream& out, BigDecimalInt b)
    out<<b.num1<<endl;
    return out;
 };
+
+
 int main()
 {
    string no1,no2,my_signed_num,size_number,no11,no22;
