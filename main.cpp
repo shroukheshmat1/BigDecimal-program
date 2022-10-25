@@ -33,6 +33,28 @@ public:
 //        {
 //            if (num1[0]!='-' && anotherDec.num1[0]!='-')
 //            {
+//// number 0 task 2
+//#include <bits/stdc++.h>
+//using namespace std;
+//int main(){
+    string str;
+    getline(cin,str);
+    for (int i=str.size()-1;i>0;i--){
+        if (str[i]==' ' and str[i]==str[i-1] ){
+            //deletes character at position i
+            str.erase(str.begin() + i );
+        }
+    }
+    for (int i=0;i<str.size();i++){
+        str[i]= tolower(str[i]);
+    }
+    str[0]= toupper(str[0]);
+    if (str[str.size()-1]=='.'){
+        cout<<str;
+    }
+    else
+       cout<<str<<".";
+}
 //                if (num1.size()==anotherDec.size())
 //                {
 //                    if (num1>anotherDec.num1)
